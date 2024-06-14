@@ -27,7 +27,7 @@ jobs:
   push:
     name: Push
     needs: [test]
-    uses: ./.github/workflows/push.yaml@dev
+    uses: ./.github/workflows/push.yaml
     secrets:
       username: ${{ secrets.DOCKERHUB_USERNAME }}
       password: ${{ secrets.DOCKERHUB_TOKEN }}
