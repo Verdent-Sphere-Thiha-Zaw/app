@@ -1,6 +1,6 @@
 name: "Reusable Workflow"
 
-on: 
+on:
   workflow_call:
     inputs:
       php-version:
@@ -16,18 +16,19 @@ jobs:
     services:
       mysql:
         image: mysql:latest
-        ports: 
+        ports:
           - 3306:3306
         env:
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: password
+          MYSQL_USERNAME: testuser
           MYSQL_PASSWORD: password
           MYSQL_ALLOW_EMPTY_PASSWORD: 'false'
 
     steps:
       - name: Checkout php
         uses: actions/checkout@v4
-      
+
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
         with:
@@ -50,13 +51,13 @@ jobs:
           composer install
 
       - name: Generate the Key
-        run: 
+        run:
           php artisan key:generate
 
       - name: Migrate the database
         run:
           php artisan migrate
-          
+
       # - name: debug the container
       #   run:
       #     docker ps
@@ -76,4 +77,3 @@ jobs:
       #     file: ./Dockerfile
       #     push: true
       #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/laravel-app:latest
-          
