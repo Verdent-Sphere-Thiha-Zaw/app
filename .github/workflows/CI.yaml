@@ -22,12 +22,11 @@ jobs:
       php-version: "8.2"
 
   push:
-
     name: Push the Docker Image
     needs: [test]
     uses: ./.github/workflows/docker_push.yaml
-    with:
-      username: ${{ secrets.DOCKERHUB_USERNAME }}
+    # with:
+    #   username: ${{ secrets.DOCKERHUB_USERNAME }}
       # password: ${{ secrets.DOCKERHUB_TOKEN }}
 
 
