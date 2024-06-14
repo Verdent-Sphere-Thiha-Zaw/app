@@ -15,12 +15,12 @@ on:
 
 
 jobs:
-  build_laravel_app:
-    name: Build Laravel App
+  push:
+    name: Push Docker Image
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout php
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
