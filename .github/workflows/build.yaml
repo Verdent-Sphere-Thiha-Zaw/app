@@ -16,6 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run Composite Action
-        uses: ./.github/actions/prepare-action
+        uses: ./.github/prepare-action
         with:
           php-version: ${{ inputs.php-version }}

@@ -16,7 +16,6 @@ runs:
     - name: Setup Env
       run: |
         cp .env.ci .env
-        cp .env.ci .env.testing
 
     - name: Install dependencies
       run: |
