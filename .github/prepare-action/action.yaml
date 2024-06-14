@@ -22,7 +22,6 @@ runs:
         composer install
 
     - name: Cache the app dependencies
-      shell: bash  # or 'pwsh' if you're using PowerShell
       uses: actions/cache@v4.0.2
       with:
         key: ${{ github.sha }}-php-vendor-cache
