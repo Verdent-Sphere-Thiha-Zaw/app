@@ -28,9 +28,8 @@ jobs:
     name: Push
     needs: [test]
     uses: ./.github/workflows/push.yaml
-    steps:
-      with:
-        dockerusername: '${{secrets.DOCKERHUB_USERNAME}}'
-        dockerpassword: '${{secrets.DOCKERHUB_TOKEN}}'
+    with:
+      dockerusername: ${{secrets.DOCKERHUB_USERNAME}}
+      dockerpassword: ${{secrets.DOCKERHUB_TOKEN}}
 
 
