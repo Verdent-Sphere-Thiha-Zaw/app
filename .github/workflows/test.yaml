@@ -73,7 +73,7 @@ jobs:
         uses: docker/login-action@v3.2.0
         with:
           username: techrepos
-          password: dckr_pat_xheW_CoerB_C4siM48B1yFGQxaw
+          password: Blur123!@#
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
