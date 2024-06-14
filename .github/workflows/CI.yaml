@@ -28,6 +28,21 @@ jobs:
     name: Push
     needs: [test]
     uses: ./.github/workflows/push.yaml
+    with:
+      secrets: inherit
+
+
+    # push:
+    #   name: Push
+    #   needs: [test]
+    #   uses: ./.github/workflows/push.yaml
+    #   runs-on: ubuntu-latest
+    #   steps:
+    #     - name: My Step
+    #       uses: ./.github/workflows/push.yaml
+    #       with:
+    #         uname: ${{ secrets.DOCKERHUB_USERNAME }}
+    #         pwd: ${{secrets.DOCKERHUB_TOKEN}}
 
 
 
