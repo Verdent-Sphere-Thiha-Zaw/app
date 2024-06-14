@@ -27,9 +27,15 @@ jobs:
   push:
     name: Push
     needs: [test]
-    uses: ./.github/workflows/push.yaml
-    with:
-      dockerusername: ${{env.DOCKERHUB_USERNAME}}
-      dockerpassword: ${{env.DOCKERHUB_TOKEN}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Docker Login
+        uses: ./.github/workflows/push.yaml
+        with:
+          dockerusername: ${{secrets.DOCKERHUB_USERNAME}}
+          dockerpassword: ${{secrets.DOCKERHUB_TOKEN}}
 
 
