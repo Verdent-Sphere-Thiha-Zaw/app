@@ -13,10 +13,20 @@ jobs:
     uses: ./.github/workflows/build.yaml
     with:
       php-version: "8.2"
-  
+
   test:
     name: Test Laravel App
     needs: [build]
     uses: ./.github/workflows/test.yaml
     with:
-      php-version: "8.2"    
+      php-version: "8.2"
+
+  push:
+    name: Push the Docker Image
+    needs: [test]
+    uses: ./.github/workflows/docker_push.yaml
+    with:
+      username: ${{ secrets.DOCKERHUB_USERNAME }}
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
