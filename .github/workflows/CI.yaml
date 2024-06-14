@@ -29,8 +29,8 @@ jobs:
     needs: [test]
     uses: ./.github/workflows/push.yaml
     secrets:
-      username: ${{ secrets.DOCKERHUB_USERNAME }}
-      password: ${{ secrets.DOCKERHUB_TOKEN }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
 # jobs:
 #   build_and_push:
