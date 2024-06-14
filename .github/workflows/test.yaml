@@ -21,7 +21,7 @@ jobs:
         env:
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: password
-          MYSQL_USERNAME: testuser
+          MYSQL_USER: testuser
           MYSQL_PASSWORD: password
           MYSQL_ALLOW_EMPTY_PASSWORD: 'false'
 
@@ -57,7 +57,7 @@ jobs:
       - name: Check SQL Container
         run:
           docker ps
-          
+
       - name: Migrate the database
         run:
           php artisan migrate
