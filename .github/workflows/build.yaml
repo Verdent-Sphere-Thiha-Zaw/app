@@ -1,4 +1,4 @@
-name: "Reusable Workflow"
+name: "Build Reusable Workflow For Laravel app"
 
 on:
   workflow_call:

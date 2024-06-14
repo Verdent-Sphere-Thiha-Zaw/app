@@ -1,14 +1,14 @@
-name: "Main Workflow"
+name: "QA Workflow"
 
 on: workflow_dispatch
-    
+
 jobs:
   build-with-version-82:
     name: Build laravel app
     uses: ./.github/workflows/build.yaml
     with:
       php-version: "8.2"
-  
+
   build-with-version-83:
     name: Build Laravel App
     uses: ./.github/workflows/build.yaml
