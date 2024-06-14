@@ -1,6 +1,17 @@
 name: "Build Reusable Workflow For Laravel app"
 
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      dockerhub_username:
+        required: true
+        type: string
+      dockerhub_password:
+        required: true
+        type: string
+    # secrets:
+    #   required-secrets:
+    #     required: true
 
 
 jobs:
