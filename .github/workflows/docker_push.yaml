@@ -26,4 +26,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ input.uname }}/laravel-app:latest
+          tags: ${{ input.dockerhub_username }}/laravel-app:latest
