@@ -6,9 +6,6 @@ on:
       php-version:
         required: true
         type: string
-    # secrets:
-    #   required-secrets:
-    #     required: true
 
 jobs:
   build:
