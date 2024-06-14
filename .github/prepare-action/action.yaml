@@ -1,7 +1,5 @@
 name: Composite Action
-
 description: A composite action to build Laravel applications
-
 runs:
   using: 'composite'
   steps:
@@ -14,19 +12,23 @@ runs:
       uses: actions/checkout@v4
 
     - name: Setup Env
+      shell: bash  # or 'pwsh' if you're using PowerShell
       run: |
         cp .env.ci .env
 
     - name: Install dependencies
+      shell: bash  # or 'pwsh' if you're using PowerShell
       run: |
         composer install
 
     - name: Cache the app dependencies
+      shell: bash  # or 'pwsh' if you're using PowerShell
       uses: actions/cache@v4.0.2
       with:
         key: ${{ github.sha }}-php-vendor-cache
         path: ./vendor
 
     - name: Generate the Key
+      shell: bash  # or 'pwsh' if you're using PowerShell
       run: |
         php artisan key:generate

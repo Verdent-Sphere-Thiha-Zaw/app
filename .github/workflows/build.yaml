@@ -18,7 +18,6 @@ jobs:
       - name: Checkout php
         uses: actions/checkout@v4
 
-      - name: Run Composite Action
-        uses: ./.github/prepare-action
+      - uses: ./.github/prepare-action
         with:
           php-version: ${{ inputs.php-version }}
