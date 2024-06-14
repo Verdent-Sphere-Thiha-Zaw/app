@@ -45,6 +45,10 @@ jobs:
           path: ./vendor
           key: php-vendor-cache
 
+      - name: Wait 10 sec
+        run:
+          sleep 10
+
       - name: Composer install
         if: steps.cache.outputs.cache-hit != 'true'
         run:
