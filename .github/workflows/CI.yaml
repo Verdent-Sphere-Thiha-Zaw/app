@@ -12,27 +12,28 @@ on:
 
 jobs:
   build:
-    name: Build laravel app
+    name: Build
     uses: ./.github/workflows/build.yaml
     with:
       php-version: "8.2"
 
   test:
-    name: Test Laravel App
+    name: Test
     needs: [build]
     uses: ./.github/workflows/test.yaml
     with:
       php-version: "8.2"
 
   push:
-    name: Push the Docker Image
+    name: Push
     needs: [test]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        run:
-          echo ${{secrets.DOCKERHUB_USERNAME}}
-          echo ${{secrets.DOCKERHUB_TOKEN}}
+      - name: Push Image
+        uses: ./.github/workflows/docker_push.yaml
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
 
     # uses: ./.github/workflows/docker_push.yaml
     # with:
