@@ -9,6 +9,9 @@ on:
       branches:
         - dev
         - main
+    secrets:
+      required-secrets:
+        required: true
 
 jobs:
   build:
