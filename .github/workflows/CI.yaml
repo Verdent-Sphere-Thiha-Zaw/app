@@ -24,19 +24,10 @@ jobs:
     with:
       php-version: "8.2"
 
-  # push:
-  #   name: Push
-  #   needs: [test]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-
-  #     - name: Push Docker Image workflow
-  #       uses: ./.github/workflows/push.yaml
-  #       with:
-  #         dockerusername: ${{secrets.DOCKERHUB_USERNAME}}
-  #         dockerpassword: ${{secrets.DOCKERHUB_TOKEN}}
+  push:
+    name: Push
+    needs: [test]
+    uses: ./.github/workflows/push.yaml
 
 
 
