@@ -57,7 +57,7 @@ jobs:
           context: .
           file: ./Dockerfile  # Adjust path to your Dockerfile if needed
           push: true
-          tags: ${{ secrets.DOCKERUNAME }}/laravel:latest  # Replace with your DockerHub username and image name
+          tags: techrepos/laravel:latest  # Replace with your DockerHub username and image name
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKERUNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKERTOKEN }}
