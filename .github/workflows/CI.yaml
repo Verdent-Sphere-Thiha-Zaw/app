@@ -28,7 +28,7 @@ jobs:
     name: Push the Docker Image
     needs: [test]
     uses: ./.github/workflows/docker_push.yaml
-    env:
+    with:
       dockerhub_username: ${{secrets.DOCKERHUB_USERNAME}}
       dockerhub_password: ${{secrets.DOCKERHUB_TOKEN}}
 
