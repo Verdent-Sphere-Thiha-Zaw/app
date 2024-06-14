@@ -28,5 +28,6 @@ jobs:
     name: Push the Docker Image
     needs: [test]
     uses: ./.github/workflows/docker_push.yaml
+    secrets: inherit
 
 
