@@ -54,6 +54,10 @@ jobs:
         run:
           php artisan key:generate
 
+      - name: Check SQL Container
+        run:
+          docker ps
+          
       - name: Migrate the database
         run:
           php artisan migrate
