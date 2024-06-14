@@ -27,12 +27,9 @@ jobs:
   push:
     name: Push
     needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Push Image
-        uses: ./.github/workflows/push.yaml
-        with:
-          username: ${{secrets.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_TOKEN}}
+    uses: ./.github/workflows/push.yaml
+    with:
+      username: ${{secrets.DOCKERHUB_USERNAME}}
+      password: ${{secrets.DOCKERHUB_TOKEN}}
 
 
