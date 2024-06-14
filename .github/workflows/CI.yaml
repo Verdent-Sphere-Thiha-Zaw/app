@@ -28,6 +28,11 @@ jobs:
     name: Push
     needs: [test]
     uses: ./.github/workflows/push.yaml
+    with:
+      registry: https://index.docker.io/v1/
+    secrets:
+      uname: ${{ secrets.DOCKERHUB_USERNAME }}
+      pwd: ${{ secrets.DOCKERHUB_TOKEN }}
 
 # jobs:
 #   build_and_push:
