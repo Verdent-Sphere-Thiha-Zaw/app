@@ -28,9 +28,6 @@ jobs:
     name: Push
     needs: [test]
     uses: ./.github/workflows/push.yaml
-    with:
-      secrets: inherit
-
 
     # push:
     #   name: Push
