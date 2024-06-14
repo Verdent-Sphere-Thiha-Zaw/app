@@ -1,20 +1,33 @@
-name: "Setup PHP Environment"
-description: "Checkout code, setup environment, and configure PHP with PECL extension"
-inputs:
-  version:
-    description: "The PHP version to setup"
-    required: true
-    default: "8.2"
+name: Composite Action
+description: A composite action to build Laravel applications
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup environment
-      run: cp .env.ci .env
-
     - name: Setup PHP with PECL extension
       uses: shivammathur/setup-php@v2
       with:
-        php-version: ${{ inputs.version }}
+        php-version: ${{ inputs.php-version }}
+
+    - name: Checkout php
+      uses: actions/checkout@v4
+
+    - name: Setup Env
+      shell: bash  # or 'pwsh' if you're using PowerShell
+      run: |
+        cp .env.ci .env
+
+    - name: Install dependencies
+      shell: bash  # or 'pwsh' if you're using PowerShell
+      run: |
+        composer install
+
+    - name: Cache the app dependencies
+      uses: actions/cache@v4.0.2
+      with:
+        key: ${{ github.sha }}-php-vendor-cache
+        path: ./vendor
+
+    - name: Generate the Key
+      shell: bash  # or 'pwsh' if you're using PowerShell
+      run: |
+        php artisan key:generate

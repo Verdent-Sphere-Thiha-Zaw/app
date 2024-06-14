@@ -1,6 +1,6 @@
 name: "Reusable Workflow"
 
-on: 
+on:
   workflow_call:
     inputs:
       php-version:
@@ -14,30 +14,10 @@ jobs:
   build:
     name: Build Laravel App
     runs-on: ubuntu-latest
-    steps: 
-      - name: Setup PHP with PECL extension
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{inputs.php-version}}
-
+    steps:
       - name: Checkout php
         uses: actions/checkout@v4
 
-      - name: Setup Env
-        run:  |
-          cp .env.ci .env
-          cp .env.ci .env.testing
-
-      - name: Install dependencies
-        run: 
-          composer install
-
-      - name: Cache the app dependencies
-        uses: actions/cache@v4.0.2
+      - uses: ./.github/prepare-action
         with:
-          key: ${{ github.sha }}-php-vendor-cache
-          path: ./vendor
-
-      - name: Generate the Key
-        run: 
-          php artisan key:generate
+          php-version: ${{ inputs.php-version }}
