@@ -8,7 +8,7 @@ on:
         type: string
       pwd:
         required: true
-        type: secret
+        type: string
 
 jobs:
   build_laravel_app:
