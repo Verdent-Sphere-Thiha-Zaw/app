@@ -31,10 +31,10 @@ jobs:
           username: ${{inputs.dockerhub_username}}
           password: ${{inputs.dockerhub_password}}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{inputs.dockerhub_username}}/laravel-app:latest
+      # - name: Build and push Docker image
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #     context: .
+      #     file: ./Dockerfile
+      #     push: true
+      #     tags: ${{inputs.dockerhub_username}}/laravel-app:latest
