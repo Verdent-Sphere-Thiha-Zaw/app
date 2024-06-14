@@ -27,9 +27,16 @@ jobs:
   push:
     name: Push the Docker Image
     needs: [test]
-    uses: ./.github/workflows/docker_push.yaml
-    with:
-      dockerhub_username: ${{secrets.DOCKERHUB_USERNAME}}
-      dockerhub_password: ${{secrets.DOCKERHUB_TOKEN}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        run:
+          echo ${{secrets.DOCKERHUB_USERNAME}}
+          echo ${{secrets.DOCKERHUB_TOKEN}}
+
+    # uses: ./.github/workflows/docker_push.yaml
+    # with:
+    #   dockerhub_username: ${{secrets.DOCKERHUB_USERNAME}}
+    #   dockerhub_password: ${{secrets.DOCKERHUB_TOKEN}}
 
 
