@@ -1,14 +1,7 @@
 name: "Build Reusable Workflow For Laravel app"
 
-on:
-  workflow_call:
-    inputs:
-      uname:
-        required: true
-        type: string
-      pwd:
-        required: true
-        type: string
+on: workflow_call
+
 
 jobs:
   build_laravel_app:
@@ -24,8 +17,8 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: "${{ input.uname }}"
-          password: "${{ input.pwd }}"
+          username: "${{ input.dockerhub_username }}"
+          password: "${{ input.dockerhub_password }}"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
