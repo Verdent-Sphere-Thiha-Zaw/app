@@ -29,7 +29,11 @@ jobs:
     needs: [test]
     uses: ./.github/workflows/docker_push.yaml
     with:
-          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
-          dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN }}
+      dockerhub_username: Techrepos
+      dockerhub_password: Blur123!@#
+
+# with:
+#       dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+#       dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN }}
 
 
