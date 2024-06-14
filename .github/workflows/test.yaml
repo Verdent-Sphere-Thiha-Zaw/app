@@ -1,0 +1,79 @@
+name: "Reusable Workflow"
+
+on: 
+  workflow_call:
+    inputs:
+      php-version:
+        required: true
+        type: string
+    # secrets:
+    #   required-secrets:
+    #     required: true
+jobs:
+  build:
+    name: Testing Workflow
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        ports: 
+          - 3306:3306
+        env:
+          MYSQL_DATABASE: test
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_PASSWORD: password
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'false'
+
+    steps:
+      - name: Checkout php
+        uses: actions/checkout@v4
+      
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{inputs.php-version}}
+
+      - name: Setup Env
+        run:  |
+          cp .env.ci .env
+
+      - name: Restore the cache
+        id: cache
+        uses: actions/cache@v4.0.2
+        with:
+          path: ./vendor
+          key: php-vendor-cache
+
+      - name: Composer install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run:
+          composer install
+
+      - name: Generate the Key
+        run: 
+          php artisan key:generate
+
+      - name: Migrate the database
+        run:
+          php artisan migrate
+          
+      # - name: debug the container
+      #   run:
+      #     docker ps
+
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v2
+
+      # - name: Log in to Docker Hub
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # - name: Build and push Docker image
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #     context: .
+      #     file: ./Dockerfile
+      #     push: true
+      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/laravel-app:latest
+          

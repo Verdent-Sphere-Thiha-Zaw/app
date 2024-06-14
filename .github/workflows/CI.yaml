@@ -1,0 +1,22 @@
+name: "CI Workflow"
+
+on:
+    push:
+    pull_request:
+      branches:
+        - dev
+        - main
+
+jobs:
+  build:
+    name: Build laravel app
+    uses: ./.github/workflows/build.yaml
+    with:
+      php-version: "8.2"
+  
+  test:
+    name: Test Laravel App
+    needs: [build]
+    uses: ./.github/workflows/test.yaml
+    with:
+      php-version: "8.2"    
