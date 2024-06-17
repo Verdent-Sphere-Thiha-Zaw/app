@@ -6,7 +6,6 @@ on:
       php-version:
         required: true
         type: string
-
 jobs:
   build:
     name: Build Laravel App
