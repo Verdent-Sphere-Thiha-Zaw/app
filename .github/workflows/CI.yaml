@@ -31,3 +31,15 @@ jobs:
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  sec:
+    name: Sec Check
+    needs: [push]
+    jobs:
+  build:
+    name: Testing Workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Testing with SonarQube
+        run:
+          echo "Thank you for everything"
