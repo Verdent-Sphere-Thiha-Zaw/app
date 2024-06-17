@@ -10,6 +10,7 @@ on:
         - main
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build:
     name: Build
@@ -35,9 +36,6 @@ jobs:
   sec:
     name: Sec Check
     needs: [push]
-    jobs:
-  build:
-    name: Testing Workflow
     runs-on: ubuntu-latest
     steps:
       - name: Testing with SonarQube
