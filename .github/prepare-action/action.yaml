@@ -8,7 +8,7 @@ runs:
       with:
         php-version: ${{ inputs.php-version }}
 
-    - name: Checkout php
+    - name: Checkout
       uses: actions/checkout@v4
 
     - name: Setup Env

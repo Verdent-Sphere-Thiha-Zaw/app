@@ -6,7 +6,6 @@ on:
       php-version:
         required: true
         type: string
-
 jobs:
   build:
     name: Build Laravel App
@@ -15,6 +14,4 @@ jobs:
       - name: Checkout php
         uses: actions/checkout@v4
 
-      - uses: ./.github/prepare-action
-        with:
-          php-version: ${{ inputs.php-version }}
+      - uses: Verdent-Sphere-Thiha-Zaw/app/.github/prepare-action@dev

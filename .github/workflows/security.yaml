@@ -1,0 +1,34 @@
+name: SonarQube Security Scan
+
+on:
+  workflow_call:
+    secrets:
+      GIT_TOKEN:
+        required: true
+      SONAR_TOKEN:
+        required: true
+      SONAR_PROJECT_KEY:
+        required: true
+      ORG_key:
+        required: true
+
+jobs:
+  security_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        secrets:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORGANIZATION: ${{ secrets.ORG_key }}

@@ -1,34 +1,53 @@
 name: "CI Workflow"
-
 on:
     push:
-      branches:
-        - dev
-        - main
     pull_request:
       branches:
         - dev
         - main
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build:
     name: Build
-    uses: ./.github/workflows/build.yaml
+    uses: Verdent-Sphere-Thiha-Zaw/app/.github/workflows/build.yaml@dev
     with:
       php-version: "8.2"
 
   test:
     name: Test
     needs: [build]
-    uses: ./.github/workflows/test.yaml
+    uses: Verdent-Sphere-Thiha-Zaw/app/.github/workflows/test.yaml@dev
     with:
       php-version: "8.2"
 
+  sec:
+    name: Sec Check
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Testing with SonarQube
+        run:
+          echo "Thank you for everything"
+  # uses: ./.github/workflows/security.yaml
+  # secrets:
+  #   - GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+  #   - SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #   - SONAR_PROJECT_KEY: ${{secrets.SONAR_PROJECT_KEY}}
+  #   - SONAR_ORGANIZATION: ${{secrets.ORG_key}}
+
   push:
     name: Push
-    needs: [test]
-    uses: ./.github/workflows/push.yaml
+    needs: [sec]
+    uses: Verdent-Sphere-Thiha-Zaw/app/.github/workflows/push.yaml@dev
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  deploy:
+    name: Deploy
+    needs: [push]
+    uses: Verdent-Sphere-Thiha-Zaw/app/.github/workflows/deploy.yaml@dev
+    secrets:
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
