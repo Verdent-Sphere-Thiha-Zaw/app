@@ -17,45 +17,51 @@ jobs:
       - name: Pull Docker image from Docker Hub
         run: docker pull nginx:latest
 
-      # - name: Stop and remove previous container (if exists)
+      - name: Stop and remove previous container (if exists)
+        run: |
+          docker stop your-container-name || true KUBE_CONFIG_DATA
+          docker rm your-container-name || true
+
+      - name: Run Docker container
+        run: |
+          docker run -d -p 8080:80 --name web-svr nginx:latest
+
+      # - name: Set up kubectl
+      #   uses: azure/k8s-set-context@v1
+      #   with:
+      #     kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+
+      # - name: Set up kubectl
       #   run: |
-      #     docker stop your-container-name || true KUBE_CONFIG_DATA
-      #     docker rm your-container-name || true
+      #     mkdir -p ~/.kube
+      #     cp path/to/your/local/kubeconfig ~/.kube/config
+      #     kubectl version  # Check kubectl version and configuration
 
-      # - name: Run Docker container
+      # - name: Deploy NGINX to Kubernetes
       #   run: |
-      #     docker run -d -p 8080:80 --name web-svr nginx:latest
+      #     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+      #     kubectl wait --namespace ingress-nginx \
+      #       --for=condition=ready pod \
+      #       --selector=app.kubernetes.io/component=controller \
+      #       --timeout=120s
 
-      - name: Set up kubectl
-        uses: azure/k8s-set-context@v1
-        with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+      # - name: Expose NGINX Service
+      #   run: |
+      #     kubectl expose deployment nginx-ingress-controller \
+      #       --type=LoadBalancer \
+      #       --name=nginx-ingress
 
-      - name: Deploy NGINX to Kubernetes
-        run: |
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
-          kubectl wait --namespace ingress-nginx \
-            --for=condition=ready pod \
-            --selector=app.kubernetes.io/component=controller \
-            --timeout=120s
+      # - name: Wait for LoadBalancer IP
+      #   run: |
+      #     sleep 30  # Allow time for the LoadBalancer IP to be assigned
+      #     kubectl get services nginx-ingress -o wide
 
-      - name: Expose NGINX Service
-        run: |
-          kubectl expose deployment nginx-ingress-controller \
-            --type=LoadBalancer \
-            --name=nginx-ingress
+      # - name: Run Health Check
+      #   run: |
+      #     curl http://$(kubectl get services nginx-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/healthz
 
-      - name: Wait for LoadBalancer IP
-        run: |
-          sleep 30  # Allow time for the LoadBalancer IP to be assigned
-          kubectl get services nginx-ingress -o wide
-
-      - name: Run Health Check
-        run: |
-          curl http://$(kubectl get services nginx-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/healthz
-
-      - name: Clean Up
-        run: |
-          kubectl delete deployment nginx-ingress-controller
-          kubectl delete svc nginx-ingress
+      # - name: Clean Up
+      #   run: |
+      #     kubectl delete deployment nginx-ingress-controller
+      #     kubectl delete svc nginx-ingress
 
