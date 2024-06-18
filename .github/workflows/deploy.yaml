@@ -1,0 +1,23 @@
+name: Deployment
+
+on: workflow_call
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pull Docker image from Docker Hub
+        run: docker pull nginx:latest
+
+      # - name: Stop and remove previous container (if exists)
+      #   run: |
+      #     docker stop your-container-name || true
+      #     docker rm your-container-name || true
+
+      - name: Run Docker container
+        run: |
+          docker run -d -p 8080:80 --name web-svr nginx:latest
