@@ -45,7 +45,7 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  push:
-    name: Push
+  deploy:
+    name: Deploy
     needs: [push]
     uses: Verdent-Sphere-Thiha-Zaw/app/.github/workflows/deploy.yaml@dev
