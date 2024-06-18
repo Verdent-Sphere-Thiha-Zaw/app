@@ -22,19 +22,21 @@ jobs:
     with:
       php-version: "8.2"
 
-  push:
-    name: Push
-    needs: [test]
-    uses: ./.github/workflows/push.yaml
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-
   sec:
     name: Sec Check
-    needs: [push]
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - name: Testing with SonarQube
         run:
           echo "Thank you for everything"
+
+  push:
+    name: Push
+    needs: [sec]
+    uses: ./.github/workflows/push.yaml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
