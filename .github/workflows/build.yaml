@@ -15,5 +15,5 @@ jobs:
         uses: actions/checkout@v4
 
       - uses: ./.github/prepare-action
-        with:
-          php-version: ${{ inputs.php-version }}
+        # with:
+        #   php-version: ${{ inputs.php-version }}
