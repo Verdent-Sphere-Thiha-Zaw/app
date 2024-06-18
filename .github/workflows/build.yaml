@@ -14,4 +14,4 @@ jobs:
       - name: Checkout php
         uses: actions/checkout@v4
 
-      - uses: ./.github/prepare-action
+      - uses: Verdent-Sphere-Thiha-Zaw/app/.github/prepare-action@dev

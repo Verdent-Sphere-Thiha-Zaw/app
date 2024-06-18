@@ -11,14 +11,14 @@ concurrency:
 jobs:
   build:
     name: Build
-    uses: ./.github/workflows/build.yaml
+    uses: Verdent-Sphere-Thiha-Zaw/app/.github/workflows/build.yaml@dev
     with:
       php-version: "8.2"
 
   test:
     name: Test
     needs: [build]
-    uses: ./.github/workflows/test.yaml
+    uses: Verdent-Sphere-Thiha-Zaw/app/.github/workflows/test.yaml@dev
     with:
       php-version: "8.2"
 
@@ -40,7 +40,7 @@ jobs:
   push:
     name: Push
     needs: [sec]
-    uses: ./.github/workflows/push.yaml
+    uses: Verdent-Sphere-Thiha-Zaw/app/.github/workflows/push.yaml@dev
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
