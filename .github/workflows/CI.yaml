@@ -49,3 +49,5 @@ jobs:
     name: Deploy
     needs: [push]
     uses: Verdent-Sphere-Thiha-Zaw/app/.github/workflows/deploy.yaml@dev
+    with:
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}

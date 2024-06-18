@@ -1,6 +1,10 @@
-name: Deployment
+name: Kubernetes Deployment
 
-on: workflow_call
+on:
+  workflow_call:
+    secrets:
+      KUBE_CONFIG_DATA:
+        required: true
 
 jobs:
   deploy:
@@ -15,9 +19,43 @@ jobs:
 
       # - name: Stop and remove previous container (if exists)
       #   run: |
-      #     docker stop your-container-name || true
+      #     docker stop your-container-name || true KUBE_CONFIG_DATA
       #     docker rm your-container-name || true
 
-      - name: Run Docker container
+      # - name: Run Docker container
+      #   run: |
+      #     docker run -d -p 8080:80 --name web-svr nginx:latest
+
+      - name: Set up kubectl
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+
+      - name: Deploy NGINX to Kubernetes
         run: |
-          docker run -d -p 8080:80 --name web-svr nginx:latest
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+          kubectl wait --namespace ingress-nginx \
+            --for=condition=ready pod \
+            --selector=app.kubernetes.io/component=controller \
+            --timeout=120s
+
+      - name: Expose NGINX Service
+        run: |
+          kubectl expose deployment nginx-ingress-controller \
+            --type=LoadBalancer \
+            --name=nginx-ingress
+
+      - name: Wait for LoadBalancer IP
+        run: |
+          sleep 30  # Allow time for the LoadBalancer IP to be assigned
+          kubectl get services nginx-ingress -o wide
+
+      - name: Run Health Check
+        run: |
+          curl http://$(kubectl get services nginx-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/healthz
+
+      - name: Clean Up
+        run: |
+          kubectl delete deployment nginx-ingress-controller
+          kubectl delete svc nginx-ingress
+
