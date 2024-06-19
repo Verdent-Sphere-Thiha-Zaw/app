@@ -22,7 +22,7 @@ jobs:
           docker run -d -p 8080:80 --name web-svr nginx:latest
 
       - name: Verify Nginx is running
-        run: curl http://localhost:80
+        run: curl http://localhost:8080
 
       - name: Holding the Container
         run: |
