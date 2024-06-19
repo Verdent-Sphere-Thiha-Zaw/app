@@ -27,8 +27,8 @@ jobs:
     needs: [test]
     uses: ./.github/workflows/security.yaml
     secrets:
-      - GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-      - SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   push:
     name: Push
