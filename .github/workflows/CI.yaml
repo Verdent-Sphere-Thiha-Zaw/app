@@ -25,17 +25,10 @@ jobs:
   sec:
     name: Sec Check
     needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Testing with SonarQube
-        run:
-          echo "Thank you for everything"
-  # uses: ./.github/workflows/security.yaml
-  # secrets:
-  #   - GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-  #   - SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #   - SONAR_PROJECT_KEY: ${{secrets.SONAR_PROJECT_KEY}}
-  #   - SONAR_ORGANIZATION: ${{secrets.ORG_key}}
+    uses: ./.github/workflows/security.yaml
+    secrets:
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   push:
     name: Push
