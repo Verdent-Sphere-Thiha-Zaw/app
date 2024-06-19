@@ -21,6 +21,13 @@ jobs:
         run: |
           docker run -d -p 8080:80 --name web-svr nginx:latest
 
+      - name: Verify Nginx is running
+        run: curl http://localhost:80
+
+      - name: Holding the Container
+        run: |
+          sleep 10
+
       # - name: Set up kubectl
       #   uses: azure/k8s-set-context@v1
       #   with:
