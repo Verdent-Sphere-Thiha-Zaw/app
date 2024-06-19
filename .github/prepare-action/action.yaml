@@ -1,0 +1,33 @@
+name: Composite Action
+description: A composite action to build Laravel applications
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup PHP with PECL extension
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Env
+      shell: bash  # or 'pwsh' if you're using PowerShell
+      run: |
+        cp .env.ci .env
+
+    - name: Install dependencies
+      shell: bash  # or 'pwsh' if you're using PowerShell
+      run: |
+        composer install
+
+    - name: Cache the app dependencies
+      uses: actions/cache@v4.0.2
+      with:
+        key: ${{ github.sha }}-php-vendor-cache
+        path: ./vendor
+
+    - name: Generate the Key
+      shell: bash  # or 'pwsh' if you're using PowerShell
+      run: |
+        php artisan key:generate
