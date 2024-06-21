@@ -34,10 +34,10 @@ jobs:
       # - name: Build assets
       #   run: npm run production
 
-      # # Install Selenium WebDriver for PHP
-      # - name: Install Selenium WebDriver for PHP
-      #   run: |
-      #     composer require php-webdriver/webdriver
+      # Install Selenium WebDriver for PHP
+      - name: Install Selenium WebDriver for PHP
+        run: |
+          composer require php-webdriver/webdriver
 
       # Run Selenium tests using PHPUnit
       # - name: Run Selenium tests
@@ -52,15 +52,6 @@ jobs:
 
       #   - name: Install npm dependencies
       #     run: npm install
-
-      # Download and install ChromeDriver
-      - name: Install ChromeDriver
-        run: |
-          CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f 1)
-          wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION
-          unzip /tmp/chromedriver.zip -d /tmp
-          sudo mv /tmp/chromedriver /usr/local/bin/chromedriver
-          sudo chmod +x /usr/local/bin/chromedriver
 
       # Run Selenium tests
       - name: Run Selenium tests
