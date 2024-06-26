@@ -1,0 +1,93 @@
+name: Selenium Tests
+
+on: workflow_call
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_DATABASE: test
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: password
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'false'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up PHP environment
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'  # Adjust PHP version as needed
+
+      # Install Composer dependencies
+      - name: Install Composer dependencies
+        run: composer install --no-ansi --no-interaction --no-progress --no-scripts --optimize-autoloader
+
+      # Install Node.js and npm (if needed)
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      # Install NPM dependencies (if needed)
+      - name: Install NPM dependencies
+        run: npm install
+
+      # Build assets (if needed)
+      # - name: Build assets
+      #   run: npm run production
+
+      # Install Selenium WebDriver for PHP
+      - name: Install Selenium WebDriver for PHP
+        run: |
+          composer require php-webdriver/webdriver
+
+      # Run Selenium tests using PHPUnit
+      # - name: Run Selenium tests
+      #   run: |
+      #     php artisan test
+
+      # Install Node.js and npm (for Laravel Mix if needed)
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: '14'
+
+      #   - name: Install npm dependencies
+      #     run: npm install
+
+      - name: Setup Env
+        run:  |
+          cp .env.ci .env
+
+      # Run Selenium tests
+      - name: Run Selenium tests
+        run: |
+          php artisan serve --port=8000 --host=127.0.0.1 &  # Start Laravel server in the background
+          sleep 5  # Wait for Laravel server to start
+          php artisan test
+
+      # Optional: Upload test artifacts or send notifications
+      # Example: Upload PHPUnit test results
+      # - name: Upload Test Results
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: test-results
+      #     path: ./tests/Feature/App/reports
+
+      # Example: Notify Slack on test completion
+      # - name: Notify Slack
+      #   uses: rtCamp/action-slack-notify@v2
+      #   env:
+      #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #   with:
+      #     status: ${{ job.status }}
+      #     mention: here

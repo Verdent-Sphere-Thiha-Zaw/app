@@ -14,3 +14,8 @@ jobs:
     uses: ./.github/workflows/build.yaml
     with:
       php-version: "8.3"
+
+  Selenium:
+    name: Selenium test
+    uses: ./.github/workflows/selenium.yaml
+    
