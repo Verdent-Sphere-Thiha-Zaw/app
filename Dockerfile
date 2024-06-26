@@ -1,19 +1,35 @@
-FROM bitnami/laravel
-# RUN apt-get update -y && apt-get install -y openssl zip unzip git
-# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-COPY . .
-COPY .env.ci .env
-COPY ./app ./app
-COPY ./bootstrap ./bootstrap
-COPY ./config ./config
-COPY ./database ./database
-COPY ./logs ./logs
-COPY ./public ./public
-COPY ./resources ./resources
-COPY ./routes ./routes
-COPY ./storage ./storage
-COPY ./tests ./tests
-RUN composer install
-RUN php artisan key:generate
-ENTRYPOINT [ "php","artisan","serve" ]
-CMD ["--port=8080" ]
+# Use the official PHP image as the base image
+FROM php:8.2-fpm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    zip \
+    unzip \
+    libonig-dev \
+    libzip-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl gd
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www
+
+# Copy existing application directory contents
+COPY . /var/www
+
+# Copy existing application directory permissions
+RUN chown -R www-data:www-data /var/www
+
+# Change current user to www-data
+USER www-data
+
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+CMD ["php-fpm"]
