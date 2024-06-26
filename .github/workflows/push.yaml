@@ -1,4 +1,4 @@
-name: Push Docker image
+name: Push Docker image with Trivy scan results
 
 on:
   workflow_call:
@@ -7,6 +7,7 @@ on:
         required: true
       DOCKERHUB_TOKEN:
         required: true
+
 jobs:
   push:
     name: Build and Push Docker Image
@@ -21,10 +22,11 @@ jobs:
         with:
           node-version: '20'
 
-      #For Advanced Docker Build Capabilities
+      # Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      # Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -32,31 +34,53 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Build Docker image
       - name: Build Docker image
         id: build
         run: |
           docker build -t laravel_app:latest .
           docker save laravel_app:latest -o vuln-image.tar
 
-      - name: Run Trivy vulnerability scanner in tarball mode
-        uses: aquasecurity/trivy-action@0.20.0
+      # Run Trivy vulnerability scanner in tarball mode
+      - name: Run Trivy vulnerability scanner
         id: trivy
+        uses: aquasecurity/trivy-action@0.20.0
         with:
           input: vuln-image.tar
           severity: 'CRITICAL,HIGH'
 
+      # Check Trivy scan result
       - name: Check Trivy scan result
         if: steps.trivy.outputs.exit-code != 0
         run: |
           echo "Trivy scan failed with CRITICAL or HIGH vulnerabilities."
           exit 1
 
+      # Build and push Docker image if Trivy scan passed
       - name: Build and push Docker image
         if: steps.trivy.outputs.exit-code == 0
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/laravel-app:latest
-          
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/laravel-app:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/laravel-app:latest
+
+      # Extract Trivy scan results to include in commit message
+      - name: Extract Trivy scan results
+        id: extract_trivy_results
+        run: |
+          echo "::set-output name=trivy_report::$(trivy --format template --template '{{ range .Vulnerabilities }}- {{ . }}\n{{ end }}' --severity HIGH,Critical)"
+
+      # Commit Trivy scan results to the branch
+      - name: Commit Trivy scan results
+        if: steps.trivy.outputs.exit-code == 0
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          echo "Trivy scan results:
+          ${{ steps.extract_trivy_results.outputs.trivy_report }}" | git commit -a -F -
+
+      # Push changes to GitHub
+      - name: Push changes to GitHub
+        if: steps.trivy.outputs.exit-code == 0
+        run: |
+          git push
+
