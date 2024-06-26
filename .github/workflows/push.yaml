@@ -7,6 +7,7 @@ on:
         required: true
       DOCKERHUB_TOKEN:
         required: true
+
 jobs:
   push:
     name: Build and Push Docker Image
@@ -21,7 +22,7 @@ jobs:
         with:
           node-version: '20'
 
-      #For Advanced Docker Build Capabilities
+      # For Advanced Docker Build Capabilities
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -38,32 +39,24 @@ jobs:
           docker build -t laravel_app:latest .
           docker save laravel_app:latest -o vuln-image.tar
 
-      - name: Install Trivy
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
-          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-          sudo apt-get update
-          sudo apt-get install -y trivy
-
       - name: Run Trivy vulnerability scanner in tarball mode
         uses: aquasecurity/trivy-action@0.20.0
         id: trivy
         with:
           input: vuln-image.tar
           severity: 'CRITICAL,HIGH'
+          format: 'json'
+          output: 'results/trivy-output.json'
 
       - name: Check Trivy scan result
-        if: steps.trivy.outputs.exit-code != 0
+        id: trivy_result_check
         run: |
-          echo "Trivy scan failed with CRITICAL or HIGH vulnerabilities."
-          exit 1
-          
-      - name: Save Trivy scan output
-        id: trivy_scan
-        run: |
-          trivy fs --input vuln-image.tar --format json --output results/trivy-output.json
+          if grep -q '"Severity": "CRITICAL"' results/trivy-output.json || grep -q '"Severity": "HIGH"' results/trivy-output.json; then
+            echo "Trivy scan failed with CRITICAL or HIGH vulnerabilities."
+            exit 1
+          else
+            echo "No CRITICAL or HIGH vulnerabilities found."
+          fi
 
       - name: Convert Trivy output to markdown
         id: convert_to_md
@@ -80,7 +73,6 @@ jobs:
 
       - name: Post Trivy scan results to PR
         uses: actions/github-script@v6
-        if: steps.convert_to_md.outputs.exit-code == 0
         with:
           script: |
             const fs = require('fs');
@@ -92,11 +84,113 @@ jobs:
             });
 
       - name: Build and push Docker image
-        if: steps.trivy.outputs.exit-code == 0
+        if: steps.trivy_result_check.conclusion == 'success'
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/laravel-app:latest
+# name: Push Docker image
+
+# on:
+#   workflow_call:
+#     secrets:
+#       DOCKERHUB_USERNAME:
+#         required: true
+#       DOCKERHUB_TOKEN:
+#         required: true
+# jobs:
+#   push:
+#     name: Build and Push Docker Image
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '20'
+
+#       #For Advanced Docker Build Capabilities
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v2
+
+#       - name: Log in to Docker Hub
+#         uses: docker/login-action@v3
+#         with:
+#           registry: https://index.docker.io/v1/
+#           username: ${{ secrets.DOCKERHUB_USERNAME }}
+#           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+#       - name: Build Docker image
+#         id: build
+#         run: |
+#           docker build -t laravel_app:latest .
+#           docker save laravel_app:latest -o vuln-image.tar
+
+#       # - name: Install Trivy
+#       #   run: |
+#       #     sudo apt-get update
+#       #     sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+#       #     wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+#       #     echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+#       #     sudo apt-get update
+#       #     sudo apt-get install -y trivy
+
+#       - name: Run Trivy vulnerability scanner in tarball mode
+#         uses: aquasecurity/trivy-action@0.20.0
+#         id: trivy
+#         with:
+#           input: vuln-image.tar
+#           severity: 'CRITICAL,HIGH'
+#           output: results/trivy-output.json
+
+#       - name: Check Trivy scan result
+#         if: steps.trivy.outputs.exit-code != 0
+#         run: |
+#           echo "Trivy scan failed with CRITICAL or HIGH vulnerabilities."
+#           exit 1
+          
+#       # - name: Run Trivy vulnerability scanner in image tarball mode
+#       #   id: trivy
+#       #   run: trivy image --input vuln-image.tar --severity CRITICAL,HIGH --format json --output results/trivy-output.json
+        
+
+#       - name: Convert Trivy output to markdown
+#         id: convert_to_md
+#         run: |
+#           echo "## Trivy Scan Results" > results/trivy-report.md
+#           jq -r '.Results[] | "### \(.Target)\n\(.Vulnerabilities[] | select(.Severity == \"CRITICAL\" or .Severity == \"HIGH\") | "- \(.Severity): \(.Title) (\(.VulnerabilityID))\n  - Description: \(.Description)\n  - Fixed Version: \(.FixedVersion)\n  - References: \(.References | join(", ")\n")\n")' results/trivy-output.json >> results/trivy-report.md
+#         continue-on-error: true
+
+#       - name: Upload scan results
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: trivy-scan-results
+#           path: results/
+
+#       - name: Post Trivy scan results to PR
+#         uses: actions/github-script@v6
+#         if: steps.convert_to_md.outputs.exit-code == 0
+#         with:
+#           script: |
+#             const fs = require('fs');
+#             const report = fs.readFileSync('results/trivy-report.md', 'utf8');
+#             github.rest.issues.createComment({
+#               ...context.repo,
+#               issue_number: context.issue.number,
+#               body: report
+#             });
+
+#       - name: Build and push Docker image
+#         if: steps.trivy.outputs.exit-code == 0
+#         uses: docker/build-push-action@v4
+#         with:
+#           context: .
+#           file: ./Dockerfile
+#           push: true
+#           tags: ${{ secrets.DOCKERHUB_USERNAME }}/laravel-app:latest
           
