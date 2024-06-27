@@ -41,6 +41,15 @@ jobs:
           docker build -t laravel_app:latest .
           docker save laravel_app:latest -o vuln-image.tar
 
+      # Download Trivy HTML template
+      - name: Download Trivy HTML template
+        run: |
+          curl -L https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
+
+      - name: create results folder
+        run:
+          mkdir results/
+          
       # Run Trivy vulnerability scanner in tarball mode
       - name: Run Trivy vulnerability scanner
         id: trivy
@@ -48,6 +57,9 @@ jobs:
         with:
           input: vuln-image.tar
           severity: 'CRITICAL,HIGH'
+          format: 'template'
+          template: '@html.tpl'
+          output: 'results/report.html'
 
       # Check Trivy scan result
       - name: Check Trivy scan result
@@ -56,14 +68,26 @@ jobs:
           echo "Trivy scan failed with CRITICAL or HIGH vulnerabilities."
           exit 1
 
-      # Commit Trivy scan results to the branch
-      - name: Commit Trivy scan results
+      # Upload Trivy scan results
+      - name: Upload scan results
+        uses: actions/upload-artifact@v2
+        with:
+          name: trivy-scan-results
+          path: results/
+
+      # Post Trivy scan results to PR
+      - name: Post Trivy scan results to PR
+        uses: actions/github-script@v6
         if: steps.trivy.outputs.exit-code == 0
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          echo "Trivy scan results:
-          $(trivy --format template --template '{{ range .Vulnerabilities }}- {{ . }}\n{{ end }}' --severity HIGH,Critical)" | git commit -a -F -
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('results/report.html', 'utf8');
+            github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: `Trivy Scan Results:\n\n${report}`
+            });
 
       # Push changes to GitHub
       - name: Push changes to GitHub
