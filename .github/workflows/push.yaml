@@ -76,18 +76,18 @@ jobs:
           path: results/
 
       # Post Trivy scan results to PR
-      # - name: Post Trivy scan results to PR
-      #   uses: actions/github-script@v6
-      #   if: steps.trivy.outputs.exit-code == 0
-      #   with:
-      #     script: |
-      #       const fs = require('fs');
-      #       const report = fs.readFileSync('results/report.html', 'utf8');
-      #       github.rest.issues.createComment({
-      #         ...context.repo,
-      #         issue_number: context.issue.number,
-      #         body: `Trivy Scan Results:\n\n${report}`
-      #       });
+      - name: Post Trivy scan results to PR
+        uses: actions/github-script@v6
+        if: steps.trivy.outputs.exit-code == 0
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('results/report.html', 'utf8');
+            github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: `Trivy Scan Results:\n\n${report}`
+            });
       
       - name: Generate report URL
         id: generate-url
