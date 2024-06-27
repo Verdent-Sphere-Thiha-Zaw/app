@@ -89,18 +89,9 @@ jobs:
       #         body: `Trivy Scan Results:\n\n${report}`
       #       });
       
-      # Post Trivy scan results as a log (for testing without PR)
-      - name: Post Trivy scan results to log
-        if: steps.trivy.outputs.exit-code == 0
-        run: |
-          echo "Trivy Scan Results:"
-          cat results/report.html
-          
-      # Push changes to GitHub
-      - name: Push changes to GitHub
-        if: steps.trivy.outputs.exit-code == 0
-        run: |
-          git push
+      - name: Generate report URL
+        id: generate-url
+        run: echo "::set-output name=url::$(echo ${{ github.repository }}/trivy-html-report)"
 
       # Build and push Docker image if Trivy scan passed
       - name: Build and push Docker image
