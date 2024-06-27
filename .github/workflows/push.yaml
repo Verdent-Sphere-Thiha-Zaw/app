@@ -49,7 +49,7 @@ jobs:
       - name: create results folder
         run:
           mkdir results/
-          
+
       # Run Trivy vulnerability scanner in tarball mode
       - name: Run Trivy vulnerability scanner
         id: trivy
